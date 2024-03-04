@@ -8,6 +8,48 @@ import SceneInit from './SceneInit';
 
 function App(){
     useEffect(() => {
+        load3d()
+    }, [])
+
+    const onJsBtnCLick = () => {
+        const startTime = performance.now();
+        // Call JS function here
+        const endTime = performance.now();
+        console.log(`Loading time: ${endTime - startTime}`)
+    }
+
+    const onWasmBtnCLick = () => {
+        const startTime = performance.now();
+        // Call WASM function here
+        const endTime = performance.now();
+        console.log("WASM load performance: ", endTime - startTime)
+    }
+    
+
+    function calculateGeometricCenter(bufferGeometry) {
+        if (!bufferGeometry.isBufferGeometry) {
+            console.error('Geometry is not BufferGeometry.');
+            return new THREE.Vector3();
+        }
+    
+        const positionAttribute = bufferGeometry.getAttribute('position');
+        const vertexCount = positionAttribute.count;
+        let centroid = new THREE.Vector3(0, 0, 0);
+    
+        for (let i = 0; i < vertexCount; i++) {
+            centroid.x += positionAttribute.getX(i);
+            centroid.y += positionAttribute.getY(i);
+            centroid.z += positionAttribute.getZ(i);
+        }
+    
+        centroid.divideScalar(vertexCount);
+    
+        console.log('Geometric Center:', centroid);
+        return centroid;
+    }
+    
+
+    const load3d = () => {
         const test = new SceneInit('myThreeJsCanvas');
         test.initialize();
         test.animate();
@@ -30,78 +72,19 @@ function App(){
     
             gltfScene.scene.rotation.y = Math.PI / 8;
             //gltfScene.scene.position.y = 0;
-            //gltfScene.scene.scale.set(8, 8, 8);
+            //gltfScene.scene.scale.set(8, 8, 8)
+            
             test.scene.add(gltfScene.scene);
         });
-    
-    }, []);
+    }
     
     return (
         <div>
+            <button onClick={onJsBtnCLick}>Process with JS</button>
+            <button>Process with Wasm</button>
             <canvas id="myThreeJsCanvas"/>
         </div>
     );
 }
 
 export default App;
-//     const [objFile, setObjFile] = useState(null);
-//     const [objLoaded, setObjLoaded] = useState(false);
-
-
-// useEffect(() => {
-//         if (objFile && !objLoaded) {
-//             const canvasRenderer = new SceneInit('scene3D');
-//             canvasRenderer.initialize();
-
-//             const loader = new GLTFLoader();
-//             loader.load(
-//                 objFile,
-//                 (gltf) => {
-//                     // Assuming gltf.scene contains the loaded object
-//                     if (gltf.scene) {
-//                         canvasRenderer.scene.add(gltf.scene);
-//                         setObjLoaded(true);
-//                     } else {
-//                         console.error('No scene found in the loaded GLTF/GLB file.');
-//                     }
-//                 },
-//                 (xhr) => {
-//                     console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-//                 },
-//                 (error) => {
-//                     console.error('Error loading GLTF/GLB file:', error);
-//                 }
-//             );
-//         }
-//     }, [objFile, objLoaded]);
-
-//     const handleFileUploadInApp = (file) => {
-//         setObjFile(URL.createObjectURL(file));
-//     };
-
-// return (
-//     <div className="App">
-//         <header className='app-header'>
-//             <h1>3D renderer ThreeJS</h1> 
-//             <Menu handleFileUploadInApp={handleFileUploadInApp} /> 
-//             {objLoaded && <canvas id="scene3D" />}
-//         </header>
-//         <div className="app-body">
-//             <canvas id = "scene3D"/>
-//         </div>
-//     </div>
-// );
-
-//-------------------------------------------------------------------------------------------------
-
-// let loadedModel;
-// const glftLoader = new glftLoader();
-// glftLoader.load('./assets/shiba/scene.gltf', (gltfScene) => {
-    //   loadedModel = gltfScene;
-    //   // console.log(loadedModel);
-    
-    //   gltfScene.scene.rotation.y = Math.PI / 8;
-    //   gltfScene.scene.position.y = 3;
-    //   gltfScene.scene.scale.set(10, 10, 10);
-    //   test.scene.add(gltfScene.scene);
-    // });
