@@ -26,3 +26,8 @@ package-lock.json
 
 # Other
 *assets
+
+#wasm pack files
+wasm_3d/pkg
+wasm_3d/target
+wasm_3d/Cargo.lock
