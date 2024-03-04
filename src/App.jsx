@@ -7,13 +7,15 @@ import SceneInit from './SceneInit';
 //import './App.css'
 
 function App(){
+    const [geometry, setGeometry] = useState(null); // State to store the loaded geometry
+
     useEffect(() => {
         load3d()
     }, [])
 
     const onJsBtnCLick = () => {
         const startTime = performance.now();
-        // Call JS function here
+        calculateGeometricCenter(geometry)
         const endTime = performance.now();
         console.log(`Loading time: ${endTime - startTime}`)
     }
@@ -62,6 +64,12 @@ function App(){
             const boundingBox = new THREE.Box3().setFromObject(gltfScene.scene);
             const size = new THREE.Vector3();
             boundingBox.getSize(size);
+
+            gltfScene.scene.traverse((child) => {
+                if (child.isMesh) {
+                    setGeometry(child.geometry); // This line stores the geometry
+                }
+            });
 
             // Calculate scale factor based on the maximum dimension of the bounding box
             const scaleFactor = 10 / Math.max(size.x, size.y, size.z);
