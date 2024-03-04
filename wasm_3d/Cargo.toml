@@ -5,16 +5,30 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
+#These lines tell Cargo that we want to allow our crate to build a native Rust static library (rlib) and a C/C++ compatible library (cdylib).
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+cfg-if = "1"
+winit = "0.28"
+env_logger = "0.10"
+log = "0.4"
+wgpu = "0.18"
+
+# tells Cargo to only include these dependencies if targeting wasm32 architecture.
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+console_error_panic_hook = "0.1.6"
+console_log = "1.0"
+wgpu = { version = "0.18", features = ["webgl"]}
 wasm-bindgen = "0.2.86"
+wasm-bindgen-futures = "0.4.30"
 
 [dependencies.web-sys]
 version = "0.3"
 features = [
   'Document', 
-  'Window', 
+  'Window',
+  'Element', 
   'HtmlCanvasElement' ,
   'WebGlRenderingContext', 
   'WebGl2RenderingContext', 
