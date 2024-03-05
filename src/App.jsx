@@ -20,7 +20,10 @@ function App(){
     const onJsBtnCLick = () => {
         if (bufferGeometry) {
             const startTime = performance.now();
+            
+            //call calculate center JSfunction
             calculateGeometricCenter(bufferGeometry);
+            
             const endTime = performance.now();
             console.log(`Loading time: ${endTime - startTime}`)
         } else {
@@ -101,22 +104,6 @@ function App(){
                 }
             });
             test.scene.add(loadedModel);
-            
-        //     if (gltfScene.scene.children.length > 0) {
-                
-        //         let object = gltfScene.scene.children[ 0 ];
-        //         if (object !== undefined) {
-        //             console.log("Buffer Geometry:", object.geometry);
-        //             setBufferGeometry(object.geometry);
-        //             setIsLoading(false);
-        //         } else {
-        //             console.error("No geometry found on the loaded object.");
-        //         }
-        //     } else {
-        //         console.error("No children found in GLTF scene.");
-        //     }
-        // }, undefined, (error) => {
-        //     console.error("Error loading GLTF model:", error);
         });
     }
     
