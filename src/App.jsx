@@ -7,25 +7,17 @@ import SceneInit from './SceneInit';
 //import './App.css'
 
 function App(){
-    //bufferGeometry states
-    const [bufferGeometry, setBufferGeometry] = useState(null);
-
-    //loading the object state 
-    const [isLoading, setIsLoading] = useState(true);
+    const [geometry, setGeometry] = useState(null); // State to store the loaded geometry
 
     useEffect(() => {
         load3d()
     }, [])
 
     const onJsBtnCLick = () => {
-        if (bufferGeometry) {
-            const startTime = performance.now();
-            calculateGeometricCenter(bufferGeometry);
-            const endTime = performance.now();
-            console.log(`Loading time: ${endTime - startTime}`)
-        } else {
-            console.error('Buffer geometry not loaded yet.');
-        }
+        const startTime = performance.now();
+        calculateGeometricCenter(geometry)
+        const endTime = performance.now();
+        console.log(`Loading time: ${endTime - startTime}`)
     }
 
     const onWasmBtnCLick = () => {
@@ -73,7 +65,12 @@ function App(){
             const boundingBox = new THREE.Box3().setFromObject(loadedModel);
             const size = new THREE.Vector3();
             boundingBox.getSize(size);
-            
+
+            gltfScene.scene.traverse((child) => {
+                if (child.isMesh) {
+                    setGeometry(child.geometry); // This line stores the geometry
+                }
+            });
 
             // Calculate scale factor based on the maximum dimension of the bounding box
             const scaleFactor = 10 / Math.max(size.x, size.y, size.z);
