@@ -7,15 +7,25 @@ import SceneInit from './SceneInit';
 //import './App.css'
 
 function App(){
+    //bufferGeometry states
+    const [bufferGeometry, setBufferGeometry] = useState(null);
+
+    //loading the object state 
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         load3d()
     }, [])
 
     const onJsBtnCLick = () => {
-        const startTime = performance.now();
-        // Call JS function here
-        const endTime = performance.now();
-        console.log(`Loading time: ${endTime - startTime}`)
+        if (bufferGeometry) {
+            const startTime = performance.now();
+            calculateGeometricCenter(bufferGeometry);
+            const endTime = performance.now();
+            console.log(`Loading time: ${endTime - startTime}`)
+        } else {
+            console.error('Buffer geometry not loaded yet.');
+        }
     }
 
     const onWasmBtnCLick = () => {
@@ -54,33 +64,65 @@ function App(){
         test.initialize();
         test.animate();
     
-        let loadedModel;
         const glftLoader = new GLTFLoader();
         glftLoader.load('/src/assets/truck.glb', (gltfScene) => {
-            loadedModel = gltfScene;
+            const loadedModel = gltfScene.scene;
+            loadedModel.name = "object" // set object name
+
             // Calculate bounding box
-            const boundingBox = new THREE.Box3().setFromObject(gltfScene.scene);
+            const boundingBox = new THREE.Box3().setFromObject(loadedModel);
             const size = new THREE.Vector3();
             boundingBox.getSize(size);
+            
 
             // Calculate scale factor based on the maximum dimension of the bounding box
             const scaleFactor = 10 / Math.max(size.x, size.y, size.z);
 
             // Apply scale to the model
-            gltfScene.scene.scale.set(scaleFactor, scaleFactor, scaleFactor);
+            loadedModel.scale.set(scaleFactor, scaleFactor, scaleFactor);
 
     
-            gltfScene.scene.rotation.y = Math.PI / 8;
+            loadedModel.rotation.y = Math.PI / 8;
             //gltfScene.scene.position.y = 0;
             //gltfScene.scene.scale.set(8, 8, 8)
             
-            test.scene.add(gltfScene.scene);
+            // Traverse the loaded model
+            loadedModel.traverse((child) => {
+                // Check if the child is a mesh and has geometry
+                if (child.isMesh && child.geometry) {
+                    
+                    //print information about the geometry
+                    console.log("Geometry name:", child.name);
+                    console.log("Geometry:", child.geometry);
+                    
+                    //set states
+                    setBufferGeometry(child.geometry);
+                    setIsLoading(false);
+                }
+            });
+            test.scene.add(loadedModel);
+            
+        //     if (gltfScene.scene.children.length > 0) {
+                
+        //         let object = gltfScene.scene.children[ 0 ];
+        //         if (object !== undefined) {
+        //             console.log("Buffer Geometry:", object.geometry);
+        //             setBufferGeometry(object.geometry);
+        //             setIsLoading(false);
+        //         } else {
+        //             console.error("No geometry found on the loaded object.");
+        //         }
+        //     } else {
+        //         console.error("No children found in GLTF scene.");
+        //     }
+        // }, undefined, (error) => {
+        //     console.error("Error loading GLTF model:", error);
         });
     }
     
     return (
         <div>
-            <button onClick={onJsBtnCLick}>Process with JS</button>
+            <button onClick={onJsBtnCLick} disabled={isLoading}>Process with JS</button>
             <button>Process with Wasm</button>
             <canvas id="myThreeJsCanvas"/>
         </div>
