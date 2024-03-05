@@ -28,7 +28,7 @@ version = "0.3"
 features = [
   'Document', 
   'Window',
-  'Element', 
+  'Element',
   'HtmlCanvasElement' ,
   'WebGlRenderingContext', 
   'WebGl2RenderingContext', 
