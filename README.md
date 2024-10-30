@@ -5,10 +5,9 @@ The aim of the project comes from the initial idea of comparison between Java sc
 Therefore, you will see two separate implementations in this repository: Javascript and Web Assembly with Rust. 
 ## Features
 ## Tools & Technologies used
-# Setup & Installation
-## Prerequisites 
-## 1st Prerequisite
-## 2nd Prerequisite ...
+# Setup
+## 1st step
+## 2nd step ...
 # Usage
 ## Build & Run
 ## Model upload
